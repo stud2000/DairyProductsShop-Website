@@ -1,0 +1,92 @@
+<%- include('layout-start', { pageTitle: 'Dashboard', activePage: 'dashboard', adminName, flash, newInquiries }) %>
+
+<!-- Stats -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon brown">🛒</div>
+    <div><div class="stat-num"><%= totalProducts %></div><div class="stat-label">Total Products</div></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon green">✅</div>
+    <div><div class="stat-num"><%= availableProducts %></div><div class="stat-label">Available</div></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon gold">📬</div>
+    <div><div class="stat-num"><%= totalInquiries %></div><div class="stat-label">Total Inquiries</div></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon red">🔔</div>
+    <div><div class="stat-num"><%= newInquiries %></div><div class="stat-label">New Inquiries</div></div>
+  </div>
+</div>
+
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+  <!-- Recent Inquiries -->
+  <div class="table-card">
+    <div class="table-header">
+      <h3>📬 Recent Inquiries</h3>
+      <a href="/admin/inquiries" class="btn btn-outline btn-sm">View All</a>
+    </div>
+    <% if (recentInquiries.length > 0) { %>
+      <table>
+        <thead><tr><th>Name</th><th>Type</th><th>Status</th><th>Date</th></tr></thead>
+        <tbody>
+          <% recentInquiries.forEach(inq => { %>
+            <tr>
+              <td><strong><%= inq.name %></strong><br><span style="font-size:12px;color:var(--text-mid);"><%= inq.phone %></span></td>
+              <td><span class="badge badge-info"><%= inq.type %></span></td>
+              <td>
+                <span class="badge <%= inq.status === 'New' ? 'badge-danger' : inq.status === 'Resolved' ? 'badge-success' : 'badge-warning' %>">
+                  <%= inq.status %>
+                </span>
+              </td>
+              <td style="font-size:12px;color:var(--text-mid);"><%= new Date(inq.createdAt).toLocaleDateString('en-IN') %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <div style="padding:40px; text-align:center; color:var(--text-mid);">No inquiries yet</div>
+    <% } %>
+  </div>
+
+  <!-- Category Stats -->
+  <div class="table-card">
+    <div class="table-header">
+      <h3>📊 Products by Category</h3>
+      <a href="/admin/products/new" class="btn btn-primary btn-sm">+ Add Product</a>
+    </div>
+    <div style="padding:20px;">
+      <% if (categoryStats.length > 0) { %>
+        <% const maxCount = categoryStats[0].count; %>
+        <% categoryStats.forEach(cat => { %>
+          <div class="cat-bar">
+            <div class="cat-bar-label"><%= cat._id %></div>
+            <div class="cat-bar-track"><div class="cat-bar-fill" data-width="<%= Math.round((cat.count/maxCount)*100) %>" style="width:0"></div></div>
+            <div class="cat-bar-count"><%= cat.count %></div>
+          </div>
+        <% }) %>
+      <% } else { %>
+        <div style="text-align:center; color:var(--text-mid); padding:20px;">No products yet. <a href="/admin/products/new" style="color:var(--brown);">Add one!</a></div>
+      <% } %>
+    </div>
+
+    <div style="padding:0 20px 20px; display:flex; gap:12px; flex-wrap:wrap;">
+      <a href="/admin/products/new" class="btn btn-primary btn-sm">➕ Add Product</a>
+      <a href="/admin/inquiries" class="btn btn-outline btn-sm">📬 View Inquiries</a>
+      <a href="/" target="_blank" class="btn btn-outline btn-sm">🌐 View Site</a>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Tips -->
+<div style="background:linear-gradient(135deg,#5C3D1E,#8B5E3C); border-radius:12px; padding:24px; margin-top:24px; color:white;">
+  <h3 style="margin-bottom:12px;">🚀 Quick Actions</h3>
+  <div style="display:flex; gap:12px; flex-wrap:wrap;">
+    <a href="/admin/products/new" class="btn" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3);">➕ Add New Product</a>
+    <a href="/admin/inquiries?status=New" class="btn" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3);">📬 New Inquiries (<%= newInquiries %>)</a>
+    <a href="/" target="_blank" class="btn" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3);">🌐 Preview Website</a>
+  </div>
+</div>
+
+<%- include('layout-end') %>

@@ -1,0 +1,110 @@
+<%- include('partials/head', { title: product.name }) %>
+<%- include('partials/navbar') %>
+
+<div class="page-header">
+  <div class="container">
+    <h1><%= product.name %></h1>
+    <div class="breadcrumb"><a href="/">Home</a> <span>/</span> <a href="/products">Products</a> <span>/</span> <%= product.name %></div>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    <div class="product-detail-grid">
+      <div>
+        <% const catEmoji = { 'Milk': '🥛', 'Curd': '🥣', 'Butter': '🧈', 'Cheese': '🧀', 'Ghee': '✨', 'Paneer': '🧀', 'Ice Cream': '🍦', 'Lassi': '🥤', 'Cream': '🍶', 'Other': '🐄' }; %>
+        <% if (product.image && product.image !== 'default-product.jpg') { %>
+          <img src="/uploads/<%= product.image %>" alt="<%= product.name %>" class="product-detail-img">
+        <% } else { %>
+          <div class="product-detail-img-placeholder"><%= catEmoji[product.category] || '🐄' %></div>
+        <% } %>
+      </div>
+
+      <div>
+        <% if (product.badge) { %>
+          <span class="product-badge" style="position:static; display:inline-block; margin-bottom:12px;"><%= product.badge %></span>
+        <% } %>
+        <div class="product-category" style="font-size:12px; letter-spacing:2px; color:var(--accent); font-weight:600; text-transform:uppercase; margin-bottom:8px;"><%= product.category %></div>
+        <h1 style="font-family:'Lora',serif; font-size:2rem; color:var(--brown); margin-bottom:16px; line-height:1.2;"><%= product.name %></h1>
+        <p style="color:var(--text-mid); line-height:1.8; font-size:15px; margin-bottom:24px;"><%= product.description %></p>
+
+        <div style="font-size:12px; font-weight:600; color:var(--text-mid); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px;">Choose Pack Size:</div>
+        <div class="variant-selector">
+          <% product.variants.forEach((v, i) => { %>
+            <button class="variant-btn <%= i === 0 ? 'active' : '' %>" onclick="selectVariant(this, <%= v.price %>)">
+              <%= v.quantity %><br><strong>₹<%= v.price %></strong>
+            </button>
+          <% }) %>
+        </div>
+
+        <div style="margin: 24px 0; padding: 20px; background: var(--ivory-dark); border-radius: var(--radius); border: 1px solid var(--border);">
+          <div style="font-size:12px; color:var(--text-light); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">Starting from</div>
+          <div id="selectedPrice" style="font-family:'Lora',serif; font-size:2.4rem; font-weight:700; color:var(--brown);">₹<%= product.variants[0] ? product.variants[0].price : '—' %></div>
+        </div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:24px;">
+          <a href="tel:+919876543210" class="btn btn-primary">Call to Order</a>
+          <a href="https://wa.me/919876543210?text=Hi, I want to order <%= encodeURIComponent(product.name) %>" class="btn btn-green">WhatsApp</a>
+          <a href="/contact" class="btn btn-outline">Send Inquiry</a>
+        </div>
+
+        <div style="display:flex; gap:20px; flex-wrap:wrap; padding:16px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-bottom:16px;">
+          <span style="font-size:13px; color:var(--text-mid);">Farm Fresh</span>
+          <span style="font-size:13px; color:var(--text-mid);">Quality Tested</span>
+          <span style="font-size:13px; color:var(--text-mid);">Daily Delivery</span>
+          <span style="font-size:13px; color:var(--text-mid);">No Preservatives</span>
+        </div>
+
+        <% if (product.nutritionInfo) { %>
+          <div style="background:var(--ivory); border-radius:var(--radius); padding:16px 18px; border:1px solid var(--border); font-size:14px; color:var(--text-mid);">
+            <strong style="color:var(--brown);">Nutrition Info:</strong><br>
+            <span style="margin-top:6px; display:block;"><%= product.nutritionInfo %></span>
+          </div>
+        <% } %>
+
+        <% if (!product.isAvailable) { %>
+          <div class="flash flash-error" style="margin-top:16px;">Currently out of stock. Please call us for availability.</div>
+        <% } %>
+      </div>
+    </div>
+
+    <% if (related.length > 0) { %>
+      <div style="margin-top:60px; padding-top:48px; border-top:1px solid var(--border);">
+        <div class="section-header" style="margin-bottom:32px;">
+          <div class="eyebrow">Related</div>
+          <h2>Similar Products</h2>
+        </div>
+        <div class="products-grid">
+          <% const catEmoji2 = { 'Milk': '🥛', 'Curd': '🥣', 'Butter': '🧈', 'Cheese': '🧀', 'Ghee': '✨', 'Paneer': '🧀', 'Ice Cream': '🍦', 'Lassi': '🥤', 'Cream': '🍶', 'Other': '🐄' }; %>
+          <% related.forEach(p => { %>
+            <div class="product-card">
+              <% if (p.image && p.image !== 'default-product.jpg') { %>
+                <img src="/uploads/<%= p.image %>" alt="<%= p.name %>" class="product-img">
+              <% } else { %>
+                <div class="product-img-placeholder"><%= catEmoji2[p.category] || '🐄' %></div>
+              <% } %>
+              <div class="product-body">
+                <div class="product-category"><%= p.category %></div>
+                <div class="product-name"><%= p.name %></div>
+                <div class="product-footer">
+                  <div class="product-price">₹<%= p.variants[0] ? p.variants[0].price : '—' %></div>
+                  <a href="/products/<%= p._id %>" class="btn btn-primary btn-sm">View</a>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    <% } %>
+  </div>
+</section>
+
+<script>
+function selectVariant(btn, price) {
+  document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('selectedPrice').textContent = '₹' + price;
+}
+</script>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,80 @@
+<%- include('layout-start', { pageTitle: 'Inquiries', activePage: 'inquiries', adminName, flash, newInquiries: counts.new }) %>
+
+<!-- Stats Row -->
+<div style="display:flex; gap:16px; margin-bottom:24px; flex-wrap:wrap;">
+  <a href="/admin/inquiries" class="stat-card" style="text-decoration:none; flex:1; min-width:140px; <%= currentStatus === 'All' ? 'border:2px solid var(--brown);' : '' %>">
+    <div class="stat-icon gold">📬</div>
+    <div><div class="stat-num"><%= counts.all %></div><div class="stat-label">Total</div></div>
+  </a>
+  <a href="/admin/inquiries?status=New" class="stat-card" style="text-decoration:none; flex:1; min-width:140px; <%= currentStatus === 'New' ? 'border:2px solid var(--red);' : '' %>">
+    <div class="stat-icon red">🔔</div>
+    <div><div class="stat-num"><%= counts.new %></div><div class="stat-label">New</div></div>
+  </a>
+  <a href="/admin/inquiries?status=In Progress" class="stat-card" style="text-decoration:none; flex:1; min-width:140px;">
+    <div class="stat-icon gold">⏳</div>
+    <div><div class="stat-num"><%= counts.inProgress %></div><div class="stat-label">In Progress</div></div>
+  </a>
+  <a href="/admin/inquiries?status=Resolved" class="stat-card" style="text-decoration:none; flex:1; min-width:140px;">
+    <div class="stat-icon green">✅</div>
+    <div><div class="stat-num"><%= counts.resolved %></div><div class="stat-label">Resolved</div></div>
+  </a>
+</div>
+
+<div class="table-card">
+  <div class="table-header">
+    <h3>📬 Inquiries</h3>
+    <div class="filters-row">
+      <a href="/admin/inquiries" class="btn btn-sm <%= currentStatus === 'All' ? 'btn-primary' : 'btn-outline' %>">All</a>
+      <a href="/admin/inquiries?status=New" class="btn btn-sm <%= currentStatus === 'New' ? 'btn-primary' : 'btn-outline' %>">New</a>
+      <a href="/admin/inquiries?status=In Progress" class="btn btn-sm <%= currentStatus === 'In Progress' ? 'btn-primary' : 'btn-outline' %>">In Progress</a>
+      <a href="/admin/inquiries?status=Resolved" class="btn btn-sm <%= currentStatus === 'Resolved' ? 'btn-primary' : 'btn-outline' %>">Resolved</a>
+    </div>
+  </div>
+
+  <% if (inquiries.length > 0) { %>
+    <div style="padding:16px;">
+      <% inquiries.forEach(inq => { %>
+        <div class="inquiry-detail" style="border-left-color: <%= inq.status === 'New' ? '#DC2626' : inq.status === 'Resolved' ? '#2D6A4F' : '#D4A017' %>;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px; margin-bottom:8px;">
+            <div>
+              <h4 style="margin-bottom:4px;"><%= inq.subject %></h4>
+              <div class="inquiry-meta">
+                <span>👤 <strong><%= inq.name %></strong></span>
+                <span>📞 <a href="tel:<%= inq.phone %>" style="color:var(--brown);"><%= inq.phone %></a></span>
+                <span>📧 <a href="mailto:<%= inq.email %>" style="color:var(--brown);"><%= inq.email %></a></span>
+                <span>🏷️ <%= inq.type %></span>
+                <span>📅 <%= new Date(inq.createdAt).toLocaleString('en-IN') %></span>
+              </div>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center;">
+              <span class="badge <%= inq.status === 'New' ? 'badge-danger' : inq.status === 'Resolved' ? 'badge-success' : 'badge-warning' %>"><%= inq.status %></span>
+              <form action="/admin/inquiries/<%= inq._id %>?_method=DELETE" method="POST" style="display:inline;">
+                <button class="btn btn-danger btn-xs" data-confirm="Delete this inquiry?">🗑️</button>
+              </form>
+            </div>
+          </div>
+          <div class="inquiry-msg"><%= inq.message %></div>
+
+          <!-- Admin Reply / Status Update -->
+          <form action="/admin/inquiries/<%= inq._id %>/status" method="POST" style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+            <select name="status" style="padding:7px 12px; border:2px solid var(--border); border-radius:8px; font-size:13px;">
+              <option value="New" <%= inq.status === 'New' ? 'selected' : '' %>>New</option>
+              <option value="In Progress" <%= inq.status === 'In Progress' ? 'selected' : '' %>>In Progress</option>
+              <option value="Resolved" <%= inq.status === 'Resolved' ? 'selected' : '' %>>Resolved</option>
+            </select>
+            <input type="text" name="adminNote" value="<%= inq.adminNote || '' %>" placeholder="Admin note (optional)..." style="flex:1;min-width:200px;padding:7px 12px;border:2px solid var(--border);border-radius:8px;font-size:13px;">
+            <button class="btn btn-primary btn-sm">Update</button>
+            <a href="tel:<%= inq.phone %>" class="btn btn-success btn-sm">📞 Call</a>
+          </form>
+        </div>
+      <% }) %>
+    </div>
+  <% } else { %>
+    <div style="padding:60px; text-align:center; color:var(--text-mid);">
+      <div style="font-size:48px; margin-bottom:16px;">📬</div>
+      <h3>No Inquiries <%= currentStatus !== 'All' ? '(' + currentStatus + ')' : '' %></h3>
+    </div>
+  <% } %>
+</div>
+
+<%- include('layout-end') %>

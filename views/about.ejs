@@ -1,0 +1,99 @@
+<%- include('partials/head', { title: 'About Us' }) %>
+<%- include('partials/navbar') %>
+
+<div class="page-header">
+  <div class="container">
+    <h1>About Shree Dairy Farm</h1>
+    <p>Four decades of pure, fresh and trusted dairy products</p>
+    <div class="breadcrumb"><a href="/">Home</a> <span>/</span> About</div>
+  </div>
+</div>
+
+<section class="section" style="background: var(--white);">
+  <div class="container">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center;">
+      <div>
+        <div class="eyebrow">Our Story</div>
+        <h2 style="font-size:2rem; color:var(--brown); margin-bottom:20px;">From a Small Farm to a Trusted Name</h2>
+        <p style="color:var(--text-mid); line-height:1.85; margin-bottom:16px; font-size:15px;">Shree Dairy Farm was founded in 1985 by Shri Ramchandra Patil with just 5 cows and a dream to provide the purest milk to his neighbors. What started as a small venture in Solapur has grown into one of the most trusted dairy farms in Maharashtra.</p>
+        <p style="color:var(--text-mid); line-height:1.85; margin-bottom:16px; font-size:15px;">Today, we care for over 200 cows and deliver fresh dairy products to over 5,000 families across Solapur district every single day — 365 days a year, without exception.</p>
+        <p style="color:var(--text-mid); line-height:1.85; font-size:15px;">Our philosophy is simple: healthy, happy cows produce the best milk. We believe in treating our animals with love and respect, and that goodness flows through into every product we make.</p>
+      </div>
+      <div style="background:var(--ivory-dark); border:1px solid var(--border); border-radius:var(--radius); padding:40px; text-align:center;">
+        <div style="font-size:64px; margin-bottom:16px;">🐄</div>
+        <div style="font-family:'Lora',serif; font-size:1.6rem; color:var(--brown); margin-bottom:6px;">Since 1985</div>
+        <div style="color:var(--text-mid); font-size:14px; margin-bottom:28px;">Serving Fresh Dairy to Solapur</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div style="background:var(--white); padding:16px; border-radius:var(--radius); border:1px solid var(--border);">
+            <div style="font-family:'Lora',serif; font-size:26px; font-weight:700; color:var(--brown);">200+</div>
+            <div style="font-size:12px; color:var(--text-light); margin-top:2px;">Happy Cows</div>
+          </div>
+          <div style="background:var(--white); padding:16px; border-radius:var(--radius); border:1px solid var(--border);">
+            <div style="font-family:'Lora',serif; font-size:26px; font-weight:700; color:var(--brown);">5,000+</div>
+            <div style="font-size:12px; color:var(--text-light); margin-top:2px;">Families Served</div>
+          </div>
+          <div style="background:var(--white); padding:16px; border-radius:var(--radius); border:1px solid var(--border);">
+            <div style="font-family:'Lora',serif; font-size:26px; font-weight:700; color:var(--brown);">38+</div>
+            <div style="font-size:12px; color:var(--text-light); margin-top:2px;">Years in Business</div>
+          </div>
+          <div style="background:var(--white); padding:16px; border-radius:var(--radius); border:1px solid var(--border);">
+            <div style="font-family:'Lora',serif; font-size:26px; font-weight:700; color:var(--brown);">10+</div>
+            <div style="font-size:12px; color:var(--text-light); margin-top:2px;">Product Varieties</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section why-section">
+  <div class="container">
+    <div class="section-header centered">
+      <div class="eyebrow">Our Values</div>
+      <h2>What We Stand For</h2>
+    </div>
+    <div class="why-grid">
+      <div class="why-card"><div class="why-icon">💚</div><h3>Animal Welfare</h3><p>Our cows graze on open pastures, eat natural grass and are never given artificial hormones. Happy cows produce pure milk.</p></div>
+      <div class="why-card"><div class="why-icon">🧼</div><h3>Hygiene First</h3><p>Our dairy plant follows strict food safety standards. All equipment is sterilized daily and staff wear proper protective gear.</p></div>
+      <div class="why-card"><div class="why-icon">🌱</div><h3>Natural Process</h3><p>No shortcuts. No artificial additives. Our ghee is churned traditionally, paneer is hand-pressed, and curd is set fresh daily.</p></div>
+      <div class="why-card"><div class="why-icon">🤝</div><h3>Community First</h3><p>We employ local workers, support local farmers, and price our products fairly so every family can afford pure dairy.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="background:var(--white);">
+  <div class="container">
+    <div class="section-header centered">
+      <div class="eyebrow">Our Team</div>
+      <h2>The People Behind the Freshness</h2>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:20px;">
+      <% const team = [
+        { name: 'Ramchandra Patil', role: 'Founder & Owner', emoji: '👨‍🌾' },
+        { name: 'Sunita Patil', role: 'Operations Head', emoji: '👩‍💼' },
+        { name: 'Arun Patil', role: 'Farm Manager', emoji: '👨‍🔬' },
+        { name: 'Priya Desai', role: 'Quality Control', emoji: '👩‍🔬' }
+      ]; %>
+      <% team.forEach(member => { %>
+        <div style="background:var(--ivory); border-radius:var(--radius); padding:28px; text-align:center; border:1px solid var(--border);">
+          <div style="font-size:44px; margin-bottom:12px;"><%= member.emoji %></div>
+          <div style="font-family:'Lora',serif; font-size:15px; font-weight:600; color:var(--brown);"><%= member.name %></div>
+          <div style="font-size:12px; color:var(--text-light); margin-top:4px;"><%= member.role %></div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--brown); padding:60px 0; text-align:center;">
+  <div class="container" style="max-width:640px;">
+    <h2 style="font-family:'Lora',serif; font-size:1.9rem; color:white; margin-bottom:16px;">Come Visit Our Farm</h2>
+    <p style="color:rgba(255,255,255,0.7); line-height:1.8; margin-bottom:32px; font-size:15px;">We welcome visitors every Sunday morning (8 AM – 11 AM). Come see our cows, learn about dairy farming and take home fresh products directly from the source.</p>
+    <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+      <a href="/contact" class="btn" style="background:var(--accent); color:white;">Inquire About Farm Visit</a>
+      <a href="tel:+919876543210" class="btn" style="background:rgba(255,255,255,0.12); color:white; border:1px solid rgba(255,255,255,0.25);">Call Us</a>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

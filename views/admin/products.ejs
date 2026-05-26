@@ -1,0 +1,86 @@
+<%- include('layout-start', { pageTitle: 'Products', activePage: 'products', adminName, flash, newInquiries: 0 }) %>
+
+<div class="table-card">
+  <div class="table-header">
+    <h3>🛒 All Products (<%= products.length %>)</h3>
+    <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+      <form method="GET" action="/admin/products" style="display:flex; gap:8px; flex-wrap:wrap;">
+        <input type="text" name="search" placeholder="Search products..." value="<%= search %>" style="padding:8px 14px; border:2px solid var(--border); border-radius:8px; font-size:13px; outline:none;">
+        <select name="category" style="padding:8px 12px; border:2px solid var(--border); border-radius:8px; font-size:13px; outline:none;" onchange="this.form.submit()">
+          <option value="All">All Categories</option>
+          <% categories.forEach(cat => { %><option value="<%= cat %>" <%= currentCategory === cat ? 'selected' : '' %>><%= cat %></option><% }) %>
+        </select>
+        <button class="btn btn-outline btn-sm">Search</button>
+        <% if (search || currentCategory !== 'All') { %><a href="/admin/products" class="btn btn-outline btn-sm">✕ Clear</a><% } %>
+      </form>
+      <a href="/admin/products/new" class="btn btn-primary btn-sm">➕ Add Product</a>
+    </div>
+  </div>
+
+  <% if (products.length > 0) { %>
+    <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>Image</th>
+            <th>Product</th>
+            <th>Category</th>
+            <th>Variants / Prices</th>
+            <th>Featured</th>
+            <th>Available</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% const catEmoji = { 'Milk': '🥛', 'Curd': '🥣', 'Butter': '🧈', 'Cheese': '🧀', 'Ghee': '✨', 'Paneer': '🧀', 'Ice Cream': '🍦', 'Lassi': '🥤', 'Cream': '🍶', 'Other': '🐄' }; %>
+          <% products.forEach(product => { %>
+            <tr>
+              <td>
+                <% if (product.image && product.image !== 'default-product.jpg') { %>
+                  <img src="/uploads/<%= product.image %>" class="product-thumb" alt="<%= product.name %>">
+                <% } else { %>
+                  <div class="product-thumb-placeholder"><%= catEmoji[product.category] || '🐄' %></div>
+                <% } %>
+              </td>
+              <td>
+                <strong style="font-size:14px;"><%= product.name %></strong>
+                <% if (product.badge) { %><br><span class="badge badge-info" style="font-size:11px;margin-top:4px;"><%= product.badge %></span><% } %>
+              </td>
+              <td><span class="badge badge-gray"><%= product.category %></span></td>
+              <td>
+                <% product.variants.forEach(v => { %>
+                  <span style="font-size:12px; display:inline-block; background:#f3f4f6; border-radius:50px; padding:2px 8px; margin:2px;"><%= v.quantity %> — <strong>₹<%= v.price %></strong></span>
+                <% }) %>
+              </td>
+              <td><span class="badge <%= product.isFeatured ? 'badge-success' : 'badge-gray' %>"><%= product.isFeatured ? '⭐ Yes' : 'No' %></span></td>
+              <td>
+                <label class="toggle">
+                  <input type="checkbox" class="avail-toggle" data-id="<%= product._id %>" <%= product.isAvailable ? 'checked' : '' %>>
+                  <span class="toggle-slider"></span>
+                </label>
+                <br><span class="badge <%= product.isAvailable ? 'badge-success' : 'badge-danger' %>" data-badge="<%= product._id %>" style="margin-top:4px; font-size:11px;"><%= product.isAvailable ? 'Available' : 'Unavailable' %></span>
+              </td>
+              <td>
+                <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                  <a href="/products/<%= product._id %>" target="_blank" class="btn btn-outline btn-xs">👁️</a>
+                  <a href="/admin/products/<%= product._id %>/edit" class="btn btn-primary btn-xs">✏️ Edit</a>
+                  <form action="/admin/products/<%= product._id %>?_method=DELETE" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-danger btn-xs" data-confirm="Delete '<%= product.name %>'? This cannot be undone.">🗑️</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } else { %>
+    <div style="padding:60px; text-align:center; color:var(--text-mid);">
+      <div style="font-size:48px; margin-bottom:16px;">🛒</div>
+      <h3 style="margin-bottom:12px;">No Products Yet</h3>
+      <a href="/admin/products/new" class="btn btn-primary">➕ Add Your First Product</a>
+    </div>
+  <% } %>
+</div>
+
+<%- include('layout-end') %>

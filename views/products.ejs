@@ -1,0 +1,96 @@
+<%- include('partials/head', { title: 'Products' }) %>
+<%- include('partials/navbar') %>
+
+<div class="page-header">
+  <div class="container">
+    <h1>Our Products</h1>
+    <p>Pure, fresh and natural dairy products from our farm</p>
+    <div class="breadcrumb"><a href="/">Home</a> <span>/</span> Products</div>
+  </div>
+</div>
+
+<% if (flash.success && flash.success.length) { %>
+  <div class="flash-container"><div class="flash flash-success"><%= flash.success[0] %></div></div>
+<% } %>
+
+<section class="section">
+  <div class="container">
+    <form method="GET" action="/products">
+      <div class="filters-bar">
+        <input type="text" name="search" class="search-input" placeholder="Search products..." value="<%= search %>">
+        <select name="category" class="select-filter" onchange="this.form.submit()">
+          <option value="All" <%= currentCategory === 'All' ? 'selected' : '' %>>All Categories</option>
+          <% categories.forEach(cat => { %>
+            <option value="<%= cat %>" <%= currentCategory === cat ? 'selected' : '' %>><%= cat %></option>
+          <% }) %>
+        </select>
+        <select name="sort" class="select-filter" onchange="this.form.submit()">
+          <option value="" <%= !sort ? 'selected' : '' %>>Newest First</option>
+          <option value="name" <%= sort === 'name' ? 'selected' : '' %>>Name A–Z</option>
+          <option value="price-asc" <%= sort === 'price-asc' ? 'selected' : '' %>>Price: Low–High</option>
+          <option value="price-desc" <%= sort === 'price-desc' ? 'selected' : '' %>>Price: High–Low</option>
+        </select>
+        <button type="submit" class="btn btn-primary btn-sm">Search</button>
+        <% if (search || currentCategory !== 'All') { %>
+          <a href="/products" class="btn btn-outline btn-sm">Clear</a>
+        <% } %>
+      </div>
+    </form>
+
+    <div class="categories-grid">
+      <% const catEmoji = { 'Milk': '🥛', 'Curd': '🥣', 'Butter': '🧈', 'Cheese': '🧀', 'Ghee': '✨', 'Paneer': '🧀', 'Ice Cream': '🍦', 'Lassi': '🥤', 'Cream': '🍶', 'Other': '🐄' }; %>
+      <a href="/products" class="cat-btn <%= currentCategory === 'All' ? 'active' : '' %>">All</a>
+      <% categories.forEach(cat => { %>
+        <a href="/products?category=<%= encodeURIComponent(cat) %>" class="cat-btn <%= currentCategory === cat ? 'active' : '' %>">
+          <%= catEmoji[cat] || '🐄' %> <%= cat %>
+        </a>
+      <% }) %>
+    </div>
+
+    <p style="color: var(--text-light); margin-bottom: 24px; font-size: 13px;">
+      Showing <strong style="color:var(--brown)"><%= products.length %></strong> product<%= products.length !== 1 ? 's' : '' %>
+      <% if (currentCategory !== 'All') { %> in <strong><%= currentCategory %></strong><% } %>
+      <% if (search) { %> for "<strong><%= search %></strong>"<% } %>
+    </p>
+
+    <% if (products.length > 0) { %>
+      <div class="products-grid">
+        <% products.forEach(product => { %>
+          <div class="product-card">
+            <% if (product.badge) { %>
+              <div class="product-badge <%= product.badge.toLowerCase().includes('new') ? 'new' : '' %>"><%= product.badge %></div>
+            <% } %>
+            <% if (product.image && product.image !== 'default-product.jpg') { %>
+              <img src="/uploads/<%= product.image %>" alt="<%= product.name %>" class="product-img">
+            <% } else { %>
+              <div class="product-img-placeholder"><%= catEmoji[product.category] || '🐄' %></div>
+            <% } %>
+            <div class="product-body">
+              <div class="product-category"><%= product.category %></div>
+              <div class="product-name"><%= product.name %></div>
+              <div class="product-desc"><%= product.description %></div>
+              <div class="product-variants">
+                <% product.variants.forEach(v => { %>
+                  <span class="variant-pill"><%= v.quantity %> — <strong>₹<%= v.price %></strong></span>
+                <% }) %>
+              </div>
+              <div class="product-footer">
+                <div class="product-price">₹<%= product.variants[0] ? product.variants[0].price : '—' %><small> / <%= product.variants[0] ? product.variants[0].quantity : '' %></small></div>
+                <a href="/products/<%= product._id %>" class="btn btn-primary btn-sm">Details</a>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="empty-state">
+        <div class="empty-icon">🔍</div>
+        <h3>No Products Found</h3>
+        <p>Try a different search or category.</p>
+        <a href="/products" class="btn btn-primary" style="margin-top:16px;">View All Products</a>
+      </div>
+    <% } %>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

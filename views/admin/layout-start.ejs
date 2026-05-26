@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= typeof pageTitle !== 'undefined' ? pageTitle + ' — ' : '' %>Admin | Shree Dairy</title>
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+<div class="admin-layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">🐄</div>
+      <div>
+        <div class="logo-name">Shree Dairy</div>
+        <div class="logo-sub">Admin Panel</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Main</div>
+      <a href="/admin/dashboard" class="<%= typeof activePage !== 'undefined' && activePage === 'dashboard' ? 'active' : '' %>">
+        <span class="icon">&#9724;</span> Dashboard
+      </a>
+      <div class="nav-section-label">Products</div>
+      <a href="/admin/products" class="<%= typeof activePage !== 'undefined' && activePage === 'products' ? 'active' : '' %>">
+        <span class="icon">&#9776;</span> All Products
+      </a>
+      <a href="/admin/products/new" class="<%= typeof activePage !== 'undefined' && activePage === 'add-product' ? 'active' : '' %>">
+        <span class="icon">+</span> Add Product
+      </a>
+      <div class="nav-section-label">Customer</div>
+      <a href="/admin/inquiries" class="<%= typeof activePage !== 'undefined' && activePage === 'inquiries' ? 'active' : '' %>">
+        <span class="icon">&#9993;</span> Inquiries
+        <% if (typeof newInquiries !== 'undefined' && newInquiries > 0) { %>
+          <span class="badge"><%= newInquiries %></span>
+        <% } %>
+      </a>
+      <div class="nav-section-label">Website</div>
+      <a href="/" target="_blank"><span class="icon">&#10140;</span> View Website</a>
+    </nav>
+    <div class="sidebar-bottom">
+      <a href="/admin/logout"><span>&#8617;</span> Logout</a>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <div class="top-bar">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <button id="sidebarToggle" style="display:none; background:none; border:none; cursor:pointer; font-size:18px; color:var(--text-mid);">&#9776;</button>
+        <div class="top-bar-title"><%= typeof pageTitle !== 'undefined' ? pageTitle : 'Dashboard' %></div>
+      </div>
+      <div class="top-bar-right">
+        <a href="/" target="_blank" style="font-size:12px; color:var(--text-light);">View Site</a>
+        <div class="admin-avatar"><%= adminName ? adminName[0].toUpperCase() : 'A' %></div>
+        <span class="admin-name"><%= adminName || 'Admin' %></span>
+      </div>
+    </div>
+    <div class="page-content">
+      <% if (typeof flash !== 'undefined') { %>
+        <% if (flash.success && flash.success.length) { %>
+          <div class="flash-container"><div class="flash flash-success"><%= flash.success[0] %></div></div>
+        <% } %>
+        <% if (flash.error && flash.error.length) { %>
+          <div class="flash-container"><div class="flash flash-error"><%= flash.error[0] %></div></div>
+        <% } %>
+      <% } %>

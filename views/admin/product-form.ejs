@@ -1,0 +1,115 @@
+<%- include('layout-start', { pageTitle: product ? 'Edit Product' : 'Add Product', activePage: product ? 'products' : 'add-product', adminName, flash, newInquiries: 0 }) %>
+
+<div style="display:flex; align-items:center; gap:12px; margin-bottom:24px;">
+  <a href="/admin/products" class="btn btn-outline btn-sm">← Back</a>
+  <h2 style="font-size:20px; font-weight:700;"><%= product ? '✏️ Edit: ' + product.name : '➕ Add New Product' %></h2>
+</div>
+
+<div class="form-card">
+  <form action="<%= action %>" method="POST" enctype="multipart/form-data" class="admin-form">
+    <div class="form-grid">
+      <!-- Left Column -->
+      <div>
+        <div class="form-group">
+          <label>Product Name *</label>
+          <input type="text" name="name" value="<%= product ? product.name : '' %>" placeholder="e.g. Fresh Full Cream Milk" required>
+        </div>
+
+        <div class="form-group">
+          <label>Category *</label>
+          <select name="category" required>
+            <option value="">-- Select Category --</option>
+            <% ['Milk','Curd','Butter','Cheese','Ghee','Paneer','Ice Cream','Lassi','Cream','Other'].forEach(cat => { %>
+              <option value="<%= cat %>" <%= product && product.category === cat ? 'selected' : '' %>><%= cat %></option>
+            <% }) %>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Description *</label>
+          <textarea name="description" placeholder="Describe the product — ingredients, taste, usage..." required><%= product ? product.description : '' %></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Badge <span style="font-weight:400;color:var(--text-light);">(optional — e.g. "Best Seller", "New", "Organic")</span></label>
+          <input type="text" name="badge" value="<%= product ? product.badge : '' %>" placeholder="e.g. Best Seller">
+        </div>
+
+        <div class="form-group">
+          <label>Nutrition Info <span style="font-weight:400;color:var(--text-light);">(optional)</span></label>
+          <input type="text" name="nutritionInfo" value="<%= product ? product.nutritionInfo : '' %>" placeholder="e.g. Fat: 3.5%, Protein: 3.2%">
+        </div>
+
+        <div class="form-grid" style="margin-top:8px;">
+          <div class="form-group">
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+              <input type="checkbox" name="isAvailable" <%= !product || product.isAvailable ? 'checked' : '' %> style="width:18px;height:18px;">
+              Mark as Available
+            </label>
+          </div>
+          <div class="form-group">
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+              <input type="checkbox" name="isFeatured" <%= product && product.isFeatured ? 'checked' : '' %> style="width:18px;height:18px;">
+              Feature on Homepage
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column -->
+      <div>
+        <!-- Product Image -->
+        <div class="form-group">
+          <label>Product Image</label>
+          <div class="img-upload-zone" id="uploadZone">
+            <div class="upload-icon">📸</div>
+            <p>Click or drag & drop an image here<br><span style="font-size:12px;color:var(--text-light);">JPG, PNG, WebP — Max 5MB</span></p>
+            <input type="file" name="image" id="imageInput" accept="image/*">
+            <% if (product && product.image && product.image !== 'default-product.jpg') { %>
+              <img src="/uploads/<%= product.image %>" id="imgPreview" class="img-preview" style="display:block;">
+            <% } else { %>
+              <img id="imgPreview" class="img-preview">
+            <% } %>
+          </div>
+        </div>
+
+        <!-- Variants -->
+        <div class="form-group">
+          <label>Price Variants * <span style="font-weight:400;color:var(--text-light);">(quantity + price)</span></label>
+          <div class="variants-container">
+            <div style="display:grid; grid-template-columns:1fr 1fr 32px; gap:8px; margin-bottom:8px;">
+              <div style="font-size:12px; color:var(--text-mid); font-weight:600; padding:0 4px;">Quantity (e.g. 500ml)</div>
+              <div style="font-size:12px; color:var(--text-mid); font-weight:600; padding:0 4px;">Price (₹)</div>
+              <div></div>
+            </div>
+            <div id="variantsContainer">
+              <% if (product && product.variants.length > 0) { %>
+                <% product.variants.forEach(v => { %>
+                  <div class="variant-row">
+                    <input type="text" name="quantity" value="<%= v.quantity %>" placeholder="e.g. 500ml, 1kg" required>
+                    <input type="number" name="price" value="<%= v.price %>" placeholder="Price" step="0.01" min="0" required>
+                    <button type="button" class="btn-remove-variant" onclick="removeVariant(this)">✕</button>
+                  </div>
+                <% }) %>
+              <% } else { %>
+                <div class="variant-row">
+                  <input type="text" name="quantity" placeholder="e.g. 500ml" required>
+                  <input type="number" name="price" placeholder="Price (₹)" step="0.01" min="0" required>
+                  <button type="button" class="btn-remove-variant" onclick="removeVariant(this)">✕</button>
+                </div>
+              <% } %>
+            </div>
+            <button type="button" class="btn-add-variant" onclick="addVariantRow()">+ Add Another Size/Variant</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:12px; margin-top:8px; padding-top:24px; border-top:1px solid var(--border);">
+      <button type="submit" class="btn btn-primary"><%= product ? '💾 Update Product' : '➕ Add Product' %></button>
+      <a href="/admin/products" class="btn btn-outline">Cancel</a>
+    </div>
+  </form>
+</div>
+
+<%- include('layout-end') %>
