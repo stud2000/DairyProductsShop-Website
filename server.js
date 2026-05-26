@@ -82,8 +82,18 @@ const seedData = async () => {
 };
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, async () => {
-  console.log(`\n🐄 Dairy Shop Server running at http://localhost:${PORT}`);
-  console.log(`🔐 Admin Panel: http://localhost:${PORT}/admin/login`);
-  await seedData();
-});
+
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, async () => {
+    console.log(`🐄 Dairy Shop Server running at http://localhost:${PORT}`);
+    console.log(`🔐 Admin Panel: http://localhost:${PORT}/admin/login`);
+
+    try {
+      await seedData();
+    } catch (err) {
+      console.error('Seed Error:', err);
+    }
+  });
+}
+
+module.exports = app;
