@@ -10,6 +10,9 @@ const app = express();
 
 // Connect to MongoDB
 connectDB();
+app.get("/", (req, res) => {
+  res.send("Backend is running successfully");
+});
 
 // View Engine
 app.set('view engine', 'ejs');
