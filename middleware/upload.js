@@ -2,16 +2,26 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-const uploadDir = path.join(__dirname, '../public/uploads');
-if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+// Use memory storage on Vercel (read-only filesystem), disk storage locally
+const isVercel = process.env.VERCEL || process.env.NOW_REGION;
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadDir),
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, 'product-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
+let storage;
+
+if (isVercel) {
+  // Memory storage for Vercel – files available as req.file.buffer
+  storage = multer.memoryStorage();
+} else {
+  const uploadDir = path.join(__dirname, '../public/uploads');
+  if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+
+  storage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, uploadDir),
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+      cb(null, 'product-' + uniqueSuffix + path.extname(file.originalname));
+    }
+  });
+}
 
 const fileFilter = (req, file, cb) => {
   const allowed = /jpeg|jpg|png|gif|webp/;
