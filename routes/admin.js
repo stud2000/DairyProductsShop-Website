@@ -8,6 +8,19 @@ const upload = require('../middleware/upload');
 const fs = require('fs');
 const path = require('path');
 
+const isVercel = process.env.VERCEL || process.env.NOW_REGION;
+
+// Helper: resolve image path/name from uploaded file
+// On Vercel (memory storage): req.file.buffer exists, no filename → use placeholder
+// Locally (disk storage): req.file.filename is set
+function getImageName(file) {
+  if (!file) return null;
+  if (file.filename) return file.filename; // disk storage (local)
+  // Memory storage on Vercel — we can't persist files; return a placeholder
+  // In a production app you'd upload to Cloudinary here
+  return 'default-product.jpg';
+}
+
 // LOGIN PAGE
 router.get('/login', (req, res) => {
   if (req.session.adminId) return res.redirect('/admin/dashboard');
@@ -107,7 +120,7 @@ router.post('/products', isAdmin, upload.single('image'), async (req, res) => {
       variants,
       isAvailable: isAvailable === 'on',
       isFeatured: isFeatured === 'on',
-      image: req.file ? req.file.filename : 'default-product.jpg'
+      image: getImageName(req.file) || 'default-product.jpg'
     });
     await product.save();
     req.flash('success', `Product "${name}" added successfully!`);
@@ -154,11 +167,16 @@ router.put('/products/:id', isAdmin, upload.single('image'), async (req, res) =>
     product.nutritionInfo = nutritionInfo; product.variants = variants;
     product.isAvailable = isAvailable === 'on';
     product.isFeatured = isFeatured === 'on';
+
     if (req.file) {
-      product.image = req.file.filename;
-      if (oldImage && oldImage !== 'default-product.jpg') {
-        const oldPath = path.join(__dirname, '../public/uploads', oldImage);
-        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+      const newImage = getImageName(req.file);
+      if (newImage && newImage !== 'default-product.jpg') {
+        product.image = newImage;
+        // Only delete local disk files; Vercel has no stored files to clean up
+        if (!isVercel && oldImage && oldImage !== 'default-product.jpg') {
+          const oldPath = path.join(__dirname, '../public/uploads', oldImage);
+          if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+        }
       }
     }
     await product.save();
@@ -175,7 +193,7 @@ router.delete('/products/:id', isAdmin, async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     if (product) {
-      if (product.image && product.image !== 'default-product.jpg') {
+      if (!isVercel && product.image && product.image !== 'default-product.jpg') {
         const imgPath = path.join(__dirname, '../public/uploads', product.image);
         if (fs.existsSync(imgPath)) fs.unlinkSync(imgPath);
       }
