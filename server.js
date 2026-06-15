@@ -10,9 +10,6 @@ const app = express();
 
 // Connect to MongoDB
 connectDB();
-app.get("/", (req, res) => {
-  res.send("Backend is running successfully");
-});
 
 // View Engine
 app.set('view engine', 'ejs');
@@ -62,7 +59,7 @@ const seedData = async () => {
       email: process.env.ADMIN_EMAIL || 'admin@dairyshop.com',
       password: process.env.ADMIN_PASSWORD || 'Admin@123'
     });
-    console.log('✅ Admin account created: admin@dairyshop.com / Admin@123');
+    console.log('✅ Admin account created');
   }
 
   const productCount = await Product.countDocuments();
@@ -84,18 +81,24 @@ const seedData = async () => {
   }
 };
 
+// Seed on startup (works in both dev and production)
+const startServer = async () => {
+  try {
+    await seedData();
+  } catch (err) {
+    console.error('Seed Error:', err);
+  }
+};
+
+startServer();
+
 const PORT = process.env.PORT || 3000;
 
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(PORT, async () => {
+// Only listen when running directly (not on Vercel)
+if (require.main === module) {
+  app.listen(PORT, () => {
     console.log(`🐄 Dairy Shop Server running at http://localhost:${PORT}`);
     console.log(`🔐 Admin Panel: http://localhost:${PORT}/admin/login`);
-
-    try {
-      await seedData();
-    } catch (err) {
-      console.error('Seed Error:', err);
-    }
   });
 }
 
